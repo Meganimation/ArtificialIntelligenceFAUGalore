@@ -1,0 +1,10 @@
+langchain-ollama
+langchain-core
+langchain
+tensorflow
+numpy
+scipy
+scikit-learn
+matplotlib
+pgmpy
+torchvision

@@ -1,0 +1,9 @@
+.venv/
+.env
+.DS_Store
+
+__pycache__/
+*.py[cod]
+
+# Large local dataset archive (keep local, do not version)
+Functions/data/cifar-10-python.tar.gz
