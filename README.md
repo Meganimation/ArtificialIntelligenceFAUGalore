@@ -53,7 +53,7 @@ You may already have Python installed. Let's check.
 
     - On macOS/Linux:
      ```sh
-     python3 offlineRobot.py
+     python offlineRobot.py
      ```
    - On Windows:
      ```sh
