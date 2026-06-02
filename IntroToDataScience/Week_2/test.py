@@ -193,6 +193,8 @@ print("DataFrame with 'contains_a' column:\n", df) # Output:
 # 2   maria      CHICAGO        True
 print("\n")
 
+print("******************SPLITTING AND CONCAT********************")
+
 first_one_column = df.loc[:, "name"]
 #Note, this is a Series because we are selecting only one column. If we wanted to keep it as a DataFrame, we would use df.loc[:, ["name"]]
 print("First one column:\n", first_one_column)
@@ -206,7 +208,6 @@ df_joined = first_one_column.to_frame().join(last_two_columns)
 #NOTE: Because first_one_column is a Series as it is only one column, we need to convert it to a DataFrame using .to_frame() before joining.
 print("Joined DataFrame:\n", df_joined) 
 print("\n")
-
 
 age=[17, 19, 21, 37, 45, 60]
 score=[85, 90, 78, 92, 88, 95]
@@ -235,5 +236,139 @@ print("Filtered DataFrame for 'control' group:\n", df_control) # Output: Same as
 df_concatenated = pd.concat([df_test, df_control], ignore_index=True)
 print("Concatenated DataFrame:\n", df_concatenated) # Output: the original DataFrame but with the index reset to be sequential from 0 to n-1, where n is the total number of rows in the concatenated DataFrame.
 
+print("\n")
+
+print("******************MERGING********************")
+
+students = pd.DataFrame({
+    'studient_id': [1, 2, 3, 4],
+    'name': ['Alice', 'Bob', 'Charlie', 'David']
+})
+
+print("Students DataFrame:\n", students) # Output: You should know by now
+
+scores = pd.DataFrame({
+    'studient_id': [1, 2, 5],
+    'score': [85, 90, 78]
+})
+print("Scores DataFrame:\n", scores) # Output: You should know by now
+
+#This one will only merge the rows where the studient_id matches in both DataFrames, which are 1 and 2. The row with studient_id 3 from the students DataFrame and the row with studient_id 5 from the scores DataFrame will be excluded from the result.
+inner_merge = pd.merge(students, scores, on='studient_id', how='inner')
+
+print("Inner Merge DataFrame:\n", inner_merge) # Output:
+#    studient_id     name  score
+# 0            1    Alice     85
+# 1            2      Bob     90
+print("\n")
+
+left_merge = pd.merge(students, scores, on='studient_id', how='left')
+print("Left Merge DataFrame:\n", left_merge) # Output:
+#    studient_id     name  score
+# 0            1    Alice   85.0
+# 1            2      Bob   90.0
+# 2            3  Charlie    NaN
+# 3            4    David    NaN
+print("\n")
+
+right_merge = pd.merge(students, scores, on='studient_id', how='right')
+print("Right Merge DataFrame:\n", right_merge) # Output:
+#    studient_id     name  score
+# 0            1    Alice   85.0
+# 1            2      Bob   90.0
+# 2            5      NaN   78.0
+print("\n")
+
+outer_merge = pd.merge(students, scores, on='studient_id', how='outer')
+print("Outer Merge DataFrame:\n", outer_merge) # Output:
+#    studient_id     name  score
+# 0            1    Alice   85.0
+# 1            2      Bob   90.0
+# 2            3  Charlie    NaN
+# 3            4    David    NaN
+# 4            5      NaN   78.0
+print("\n")
+print("\n")
 
 
+drug_intake = pd.DataFrame({
+    'id': [1, 2, 3, 4, 5, 6, 7],
+    'gender': ['M', 'F', 'M', 'F', 'M', 'F', 'M'],
+    'alcohol': [3.7, 2.5, 4.0, 1.8, 3.2, 2.9, 4.5],
+    'caffeine': [1.2, 0.8, 1.5, 0.5, 1.0, 0.9, 1.8],
+    'none': [0.1, 0.2, 0.0, 0.3, 0.1, 0.4, 0.0]
+})
+
+print("Drug Intake DataFrame:\n", drug_intake) # Output: You should know by now
+
+df_long = pd.melt(drug_intake, id_vars=['id', 'gender'])
+print("Long Format DataFrame:\n", df_long) # Output:
+#    id
+# 0   1  M  alcohol    3.7
+# 1   2  F  alcohol    2.5
+# 2   3  M  alcohol    4.0
+#...
+# 7  1  M  caffeine   1.2
+# 8  2  F  caffeine   0.8
+#...
+# 14 1  M  none       0.1
+# 15 2  F  none       0.2
+print("\n")
+
+df_drop_duplicates = df_long.drop_duplicates(subset=['id'], keep='first') # Can only be first, last or False.
+print("DataFrame after dropping duplicates:\n", df_drop_duplicates) # Output: Only the first occurrence of each id is kept
+print("\n")
+
+print("******************HANDLING MISSING VALUES********************")
+df_with_missing = pd.DataFrame({
+    'var1': [10, 20, float('nan'), 30],
+    'var2': [10, float('nan'), float('nan'), 35],
+    'var3': [float('nan'), 12, 18, 27]
+})
+print("\n")
+
+print("DataFrame with Missing Values:\n", df_with_missing) # Output: You should know by now
+check_for_missing = df_with_missing.isna()
+print("Check for Missing Values (True indicates missing):\n", check_for_missing) 
+#    var1   var2   var3
+# 0  False  False   True
+# 1  False   True  False
+#...
+print("\n")
+print("Check sum of missing values in each column:\n", df_with_missing.isna().sum()) 
+# Output: var1    1
+# var2    2
+# var3    1
+#...
+print("\n")
+
+print("Drop rows with any missing values:\n", df_with_missing.dropna()) # Output: Only the row with no missing values is kept
+print("\n")
+
+print("Drop rows with missing values in var2:\n", df_with_missing.dropna(subset=['var2'])) # Output: Only the rows where var2 is not missing are kept
+print("\n")
+
+print("Fill missing values with 0:\n", df_with_missing.fillna(0)) # Output: All missing values are replaced with 0
+print("\n")
+
+print("******************DATA GROUPING********************")
+df = pd.DataFrame({
+    "department": ["HR", "HR", "IT", "IT", "Sales", "Sales"],
+    "salary": [50000, 55000, 60000, 65000, 45000, 47000]
+})
+print("Original DataFrame:\n", df) # Output: You should know by now
+
+grouped = df.groupby("department")["salary"].mean()
+print("Average Salary by Department:\n", grouped) # Output:
+# department
+# HR       52500.0
+# IT       62500.0
+# Sales    46000.0
+print("\n")
+
+print("Group by size", df.groupby("department").size()) # Output:
+# department
+# HR       2
+# IT       2
+# Sales    2
+print("\n")
